@@ -102,7 +102,7 @@ const CollegeDetail = () => {
 
       {/* Hero Banner */}
       <div className="relative pt-24 pb-14 px-4 mb-8 overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1562774053-701939374585?w=1920&q=80&auto=format" alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={(college.image_url?.replace(/\/\d+px-/, '/1200px-')) || "https://images.unsplash.com/photo-1562774053-701939374585?w=1920&q=80&auto=format"} alt={college.name} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(28,18,10,0.65) 0%, rgba(28,18,10,0.50) 50%, rgba(28,18,10,0.35) 100%)" }} />
         <div className="container mx-auto max-w-7xl relative z-10">
           <FadeIn>

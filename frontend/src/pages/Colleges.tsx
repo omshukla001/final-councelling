@@ -274,13 +274,30 @@ const CollegeCard = ({ college, index, inCompare, addCompare }: CollegeCardProps
   return (
     <FadeIn delay={index * 0.03}>
       <div className={`relative rounded-2xl h-full flex flex-col group transition-all duration-300 overflow-hidden press-card bg-white border border-stone-200/70 ${style.glow}`}>
-        {/* Colored header section */}
-        <div className={`relative px-5 pt-5 pb-4 bg-gradient-to-br ${style.gradient}`}>
+        {/* College Image */}
+        <div className="relative h-36 overflow-hidden">
+          {college.image_url ? (
+            <img
+              src={college.image_url}
+              alt={college.name}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              loading="lazy"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden'); }}
+            />
+          ) : null}
+          <div className={`${college.image_url ? 'hidden' : ''} absolute inset-0 bg-gradient-to-br ${style.gradient}`}>
+            <div className="absolute inset-0 flex items-center justify-center opacity-[0.08]">
+              <GraduationCap className="w-24 h-24" />
+            </div>
+          </div>
+          {/* Gradient overlay on image */}
+          {college.image_url && <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />}
           {/* Top bar accent */}
           <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${style.topBar}`} />
-          {/* Decorative glow */}
-          <div className={`absolute -top-10 -right-10 w-28 h-28 rounded-full ${style.bg} blur-[25px] opacity-60 group-hover:opacity-100 transition-opacity`} />
+        </div>
 
+        {/* Header badges - overlaid on image bottom */}
+        <div className={`relative px-5 pt-4 pb-3`}>
           <div className="flex items-start justify-between relative z-10">
             {/* Type icon + badge */}
             <div className="flex items-center gap-2.5">

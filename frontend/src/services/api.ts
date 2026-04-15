@@ -49,6 +49,7 @@ export interface College {
     state: string;
     nirf_rank?: number;
     type?: string;
+    image_url?: string;
 }
 
 export interface CollegeListResponse {

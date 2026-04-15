@@ -104,6 +104,7 @@ export interface CollegeData {
   type: "IIT" | "NIT" | "IIIT" | "GFTI" | string;
   nirf_rank: number | null;
   nirf_display: string | null;
+  image_url?: string | null;
   scraped_data: ScrapedData;
   branches: BranchCutoff[];
   branch_count: number;
