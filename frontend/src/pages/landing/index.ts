@@ -1,0 +1,9 @@
+export { HeroSection } from "./HeroSection";
+export { TrustStrip } from "./TrustStrip";
+export { FeaturesSection } from "./FeaturesSection";
+export { StatsBar } from "./StatsBar";
+export { HowItWorks } from "./HowItWorks";
+export { WhyChooseUs } from "./WhyChooseUs";
+export { PricingSection } from "./PricingSection";
+export { TrustSection } from "./TrustSection";
+export { CTASection } from "./CTASection";

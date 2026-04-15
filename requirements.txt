@@ -1,0 +1,38 @@
+# FastAPI and Server
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.6
+
+# Database (MongoDB)
+motor>=3.3.2
+pymongo>=4.6.1
+certifi>=2024.2.2
+
+# AI/LLM & Vector Search
+openai>=1.30.0
+pinecone>=3.1.0
+sentence-transformers>=2.2.0
+
+# Utilities & Config
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
+
+# HTTP Client
+httpx>=0.26.0
+
+# Payment Integration
+razorpay>=2.0.1
+
+# Logging
+loguru>=0.7.0
+
+# Data processing
+pandas>=2.0.0
+
+# Rate Limiting
+slowapi>=0.1.9
+email-validator>=2.1.0
+
+# Redis (optional caching)
+redis>=5.0.0

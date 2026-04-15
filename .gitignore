@@ -1,0 +1,97 @@
+# Virtual environments
+ven1/
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+serviceAccountKey.json
+counsellor-wala-production-firebase-adminsdk*.json
+
+# Database files
+*.db
+*.sqlite3
+college_counselling.db
+db_dump.txt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# ChromaDB (regenerated from embed_data.py)
+chroma_db/
+.chroma/
+
+# Build artifacts & Python Cache
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node / Frontend 
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.next/
+frontend/out/
+frontend/coverage/
+frontend/.lovable/
+frontend/test-results/
+frontend/playwright-report/
+
+# Data and Outputs (large CSV datasets — ~85MB, stored separately)
+data/
+data_pipeline/
+new_data_extracted/
+.claude/
+scrapped_colleges/
+filters.json
+master_josaa_colleges.json
+name_mapping.json
+verified_colleges.json
+missing_colleges.txt
+data_pipeline/raw/
+data_pipeline/processed/wiki_data.json
+data_pipeline/processed/cp_data_full.json
+
+# Agent & Assistive Folders (Antigravity/Gemini)
+.gemini/
+antigravity/
+brain/
+implementation_plan.md
+task.md
+walkthrough.md
+data_analysis_report.md
+design_options.md
+
+# Cleanup & Test Scripts
+scripts/check_db_values.py
+test_predictor.py
+test_api.py
+scripts/*.py
+scripts/*.txt
+scripts/*.log
+!scripts/__init__.py
+!scripts/embed_v2.py
+!scripts/enrich_metadata.py
+!scripts/verify_nirf.py
