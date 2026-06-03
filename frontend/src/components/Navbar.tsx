@@ -52,8 +52,8 @@ const Navbar = () => {
       <nav
         className={`transition-all duration-500 rounded-2xl w-full border ${
           scrolled
-            ? "backdrop-blur-2xl max-w-5xl py-2 px-5 bg-white/95 border-stone-200 shadow-lg shadow-stone-300/30"
-            : "max-w-6xl py-2 px-4 bg-transparent border-transparent"
+            ? "backdrop-blur-2xl max-w-5xl py-2 px-5 bg-white/95 border-stone-200 shadow-[0_4px_20px_rgba(0,0,0,0.06)]"
+            : "max-w-6xl py-2 px-4 bg-white/70 backdrop-blur-md border-white/60 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
         }`}
       >
         <div className="flex items-center justify-between w-full">
@@ -62,13 +62,14 @@ const Navbar = () => {
             <div className="w-11 h-11 rounded-full overflow-hidden shrink-0 shadow-lg shadow-amber-500/25 border-2 border-amber-400/40">
               <img src="/logo.png" alt="CounsellorWala" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-full h-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-extrabold text-base">CW</div>'; }}/>
             </div>
-            <span className={`font-extrabold text-xl tracking-tight hidden sm:inline transition-colors duration-300 ${scrolled ? "" : ""}`}>
-              <span className={scrolled ? "text-stone-800" : "text-white"}>Counsellor</span><span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-400">Wala</span>
+            <span className="font-extrabold text-xl tracking-tight hidden sm:inline">
+              <span className="text-stone-900">Counsellor</span>
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(90deg, #FF6B35, #EC407A)" }}>Wala</span>
             </span>
           </Link>
 
           {/* Desktop nav */}
-          <div className={`hidden lg:flex items-center gap-1 rounded-xl p-1 border transition-colors duration-300 ${scrolled ? "bg-white/70 border-stone-200" : "bg-white/10 backdrop-blur-md border-white/15"}`}>
+          <div className="hidden lg:flex items-center gap-1 rounded-xl p-1 border bg-white/70 border-stone-200">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
@@ -76,15 +77,14 @@ const Navbar = () => {
                   key={item.path}
                   to={item.path}
                   className={`relative px-3.5 py-2 text-[12px] font-semibold rounded-lg whitespace-nowrap transition-all duration-200 ${
-                    isActive
-                      ? (scrolled ? "text-stone-900" : "text-white")
-                      : (scrolled ? "text-stone-500 hover:text-stone-800" : "text-white/60 hover:text-white")
+                    isActive ? "text-stone-900" : "text-stone-500 hover:text-stone-900"
                   }`}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="activeNav"
-                      className={`absolute inset-0 rounded-lg ${scrolled ? "bg-violet-600/20 border border-violet-500/30" : "bg-white/15 border border-white/20"}`}
+                      className="absolute inset-0 rounded-lg"
+                      style={{ background: "rgba(255,107,53,0.12)", border: "1px solid rgba(255,107,53,0.25)" }}
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
                   )}
@@ -103,12 +103,12 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className={`gap-2 rounded-xl border px-3 h-9 transition-colors duration-300 ${scrolled ? "border-stone-200 bg-white/70 hover:bg-stone-100" : "border-white/20 bg-white/10 hover:bg-white/20"}`}
+                    className="gap-2 rounded-xl border px-3 h-9 border-stone-200 bg-white/70 hover:bg-stone-100"
                   >
-                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FF6B35, #F7931E)" }}>
                       <User className="w-3.5 h-3.5 text-white" />
                     </div>
-                    <span className={`text-sm font-semibold max-w-[100px] truncate transition-colors duration-300 ${scrolled ? "text-stone-800" : "text-white"}`}>
+                    <span className="text-sm font-semibold max-w-[100px] truncate text-stone-900">
                       {displayName}
                     </span>
                   </Button>
@@ -130,23 +130,37 @@ const Navbar = () => {
               </DropdownMenu>
             ) : (
               <>
-                <Button variant="ghost" size="sm" className={`text-xs font-semibold transition-colors duration-300 ${scrolled ? "text-stone-500 hover:text-stone-900" : "text-white/70 hover:text-white"}`} onClick={() => setShowLoginPopup(true)}>
+                <Button variant="ghost" size="sm" className="text-xs font-semibold text-stone-600 hover:text-stone-900" onClick={() => setShowLoginPopup(true)}>
                   Log in
                 </Button>
-                <Button size="sm" className="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-stone-900 font-bold text-xs rounded-xl px-4 border-0 shadow-md" onClick={() => setShowLoginPopup(true)}>
+                <Button
+                  size="sm"
+                  className="text-white font-bold text-xs rounded-xl px-4 border-0"
+                  style={{
+                    background: "linear-gradient(135deg, #FF6B35, #F7931E)",
+                    boxShadow: "0 6px 18px rgba(255,107,53,0.3)",
+                  }}
+                  onClick={() => setShowLoginPopup(true)}
+                >
                   Sign Up
                 </Button>
               </>
             )}
           </div>
 
-          {/* Mobile toggle */}
+          {/* Mobile toggle — generous 44px touch target */}
           <div className="lg:hidden flex items-center gap-2">
             <button
-              className="text-foreground p-2 hover:bg-stone-100 rounded-xl transition-colors"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              className="w-11 h-11 flex items-center justify-center rounded-xl transition-all text-stone-800 hover:bg-stone-100 border border-stone-200/60 bg-white/70 backdrop-blur-md"
               onClick={() => setMobileOpen(!mobileOpen)}
             >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              <motion.div
+                animate={{ rotate: mobileOpen ? 180 : 0 }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </motion.div>
             </button>
           </div>
         </div>
@@ -154,47 +168,99 @@ const Navbar = () => {
         {/* Mobile menu */}
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="lg:hidden mt-3 mx-1 rounded-xl bg-white/95 backdrop-blur-xl border border-stone-200 p-3"
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:hidden mt-3 mx-1 rounded-2xl bg-white border border-stone-200 shadow-[0_24px_60px_-16px_rgba(0,0,0,0.45)] overflow-hidden relative z-10"
           >
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileOpen(false)}
-                  className={`block px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    isActive
-                      ? "bg-violet-600/15 text-violet-300 border border-violet-500/20"
-                      : "text-stone-500 hover:text-stone-900 hover:bg-stone-100"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-            <div className="flex gap-2 mt-3 pt-3 border-t border-stone-200">
+            {/* User header strip (if logged in) */}
+            {user && (
+              <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-amber-50 border-b border-stone-100 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md ring-2 ring-white">
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-stone-900 truncate">{displayName}</p>
+                  <p className="text-[11px] text-stone-500 truncate">{user.email || user.displayName}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Nav links */}
+            <div className="p-2 space-y-1 bg-white">
+              {navItems.map((item, i) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <motion.div
+                    key={item.path}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.04 + i * 0.03, duration: 0.25 }}
+                  >
+                    <Link
+                      to={item.path}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center justify-between px-4 py-3 rounded-xl text-[14px] font-semibold transition-all duration-200 min-h-[44px] ${
+                        isActive
+                          ? "bg-gradient-to-r from-orange-50 to-amber-50 text-orange-700 border border-orange-200"
+                          : "text-stone-700 hover:text-stone-900 hover:bg-stone-50 active:bg-stone-100"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      {isActive && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]" />
+                      )}
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* CTA strip */}
+            <div className="p-3 border-t border-stone-100 bg-stone-50">
               {user ? (
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="w-full border-stone-300 text-stone-600"
+                  className="w-full h-11 border-stone-300 text-stone-700 font-semibold rounded-xl bg-white"
                   onClick={() => { setMobileOpen(false); handleLogout(); }}
                 >
                   <LogOut className="w-4 h-4 mr-2" /> Log out
                 </Button>
               ) : (
-                <>
-                  <Button variant="outline" size="sm" className="flex-1 border-stone-300 text-stone-600" onClick={() => { setMobileOpen(false); setShowLoginPopup(true); }}>Log in</Button>
-                  <Button size="sm" className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold border-0" onClick={() => { setMobileOpen(false); setShowLoginPopup(true); }}>Sign Up</Button>
-                </>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1 h-11 border-stone-300 text-stone-700 font-semibold rounded-xl bg-white"
+                    onClick={() => { setMobileOpen(false); setShowLoginPopup(true); }}
+                  >
+                    Log in
+                  </Button>
+                  <Button
+                    className="flex-1 h-11 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-bold border-0 rounded-xl shadow-md shadow-orange-400/30"
+                    onClick={() => { setMobileOpen(false); setShowLoginPopup(true); }}
+                  >
+                    Sign Up
+                  </Button>
+                </div>
               )}
             </div>
           </motion.div>
         )}
       </nav>
+
+      {/* Fixed full-screen scrim behind the mobile menu — dims the page so the panel reads as opaque, and tap-outside-to-close */}
+      {mobileOpen && (
+        <motion.button
+          aria-label="Close menu"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={() => setMobileOpen(false)}
+          className="lg:hidden fixed inset-0 top-16 bg-black/45 backdrop-blur-sm -z-10"
+        />
+      )}
     </header>
   );
 };

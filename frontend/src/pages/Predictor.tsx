@@ -118,17 +118,17 @@ const Predictor = () => {
     <div className="min-h-screen text-stone-900 pb-16 relative overflow-hidden">
       {/* Hero banner */}
       {!showResults && (
-        <div className="relative pt-24 pb-14 px-4 mb-8 overflow-hidden">
+        <div className="relative site-hero mb-8 overflow-hidden">
           <div className="absolute inset-0">
             <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80&auto=format" alt="" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(28,18,10,0.65) 0%, rgba(28,18,10,0.50) 50%, rgba(28,18,10,0.35) 100%)" }} />
           </div>
-          <div className="container mx-auto max-w-7xl relative z-10 flex flex-col items-center text-center">
+          <div className="site-container relative z-10 flex flex-col items-center text-center">
             <FadeIn>
               <div className="inline-flex justify-center items-center gap-2 px-4 py-2 mb-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-white/90">
                 <Target className="w-3.5 h-3.5" /> AI-Powered Predictions
               </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3 text-white">
+              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-3 text-white">
                 College{" "}
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-300 to-orange-300">Predictor</span>
               </h1>
@@ -138,7 +138,7 @@ const Predictor = () => {
         </div>
       )}
       {showResults && <div className="pt-24" />}
-      <div className="container mx-auto px-4 relative z-10 max-w-7xl">
+      <div className="site-container relative z-10">
 
         {/* Step Indicators */}
         {!showResults && (

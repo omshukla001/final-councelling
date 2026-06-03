@@ -1,0 +1,55 @@
+# Production compose for single-EC2 deployment.
+# Assumes:
+#   - MongoDB Atlas (external) — no mongo container here
+#   - Redis runs as a sibling container on the same host
+#   - Nginx runs on the host (installed via apt), TLS-terminates, proxies to backend:8000
+# Start:
+#   docker compose -f deploy/docker-compose.prod.yml --env-file .env up -d --build
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: councler-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "127.0.0.1:6379:6379"  # bind localhost only — not internet-exposed
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api/v1
+    image: councler-backend:prod
+    container_name: councler-backend
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_ENABLED: "true"
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+    ports:
+      - "127.0.0.1:8000:8000"  # Nginx on the host proxies to this
+    depends_on:
+      redis:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  redis_data:

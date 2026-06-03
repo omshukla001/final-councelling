@@ -54,16 +54,16 @@ const CounsellorSheet = () => {
       <AtmosphericGlow />
 
       {/* Hero Banner */}
-      <div className="relative pt-24 pb-14 px-4 mb-8 overflow-hidden">
+      <div className="relative site-hero mb-8 overflow-hidden">
         <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1920&q=80&auto=format" alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(28,18,10,0.65) 0%, rgba(28,18,10,0.50) 50%, rgba(28,18,10,0.35) 100%)" }} />
-        <div className="container mx-auto max-w-7xl relative z-10 flex flex-col items-center text-center">
+        <div className="site-container relative z-10 flex flex-col items-center text-center">
           <FadeIn>
             <div className="mb-2">
               <div className="inline-flex justify-center items-center gap-2 px-3 py-1 mb-4 rounded-md bg-white/20 backdrop-blur-md border border-white/25 text-xs font-semibold text-white">
                 <ListOrdered className="w-3 h-3 text-white" /> Counsellor Sheet
               </div>
-              <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter leading-[0.9] text-white">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.05] text-white">
                 Counsellor <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-300">Sheet</span>
               </h1>
             </div>
@@ -71,7 +71,7 @@ const CounsellorSheet = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10 max-w-7xl">
+      <div className="site-container relative z-10">
 
         {/* Main Layout: Controls on left, Results on right */}
         <div className="flex flex-col lg:flex-row gap-8">

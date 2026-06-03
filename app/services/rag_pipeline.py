@@ -96,19 +96,28 @@ def retrieve_context(question: str, chat_history: list = None, counselling_type:
         if db_context and "No real" not in db_context:
             return db_context
 
-    # Fallback to Vector Search
-    index = _get_pinecone_index()
+    # Fallback to Vector Search — gracefully degrade if Pinecone is down / key invalid
     exam_context = "IIT Indian Institute of Technology" if exam_type == "JEE Advanced" else "NIT National Institute IIIT Indian Institute of Information Technology GFTI"
     augmented_query = f"{question} {exam_context} {counselling_type}"
 
-    query_embedding = _get_embed_model().encode(augmented_query).tolist()
-        
-    results = index.query(
-        vector=query_embedding,
-        top_k=40,
-        include_metadata=True
-    )
-    
+    try:
+        index = _get_pinecone_index()
+        query_embedding = _get_embed_model().encode(augmented_query).tolist()
+        results = index.query(
+            vector=query_embedding,
+            top_k=40,
+            include_metadata=True
+        )
+    except Exception as e:
+        # Don't crash the whole chat request if Pinecone is unreachable / unauthorized.
+        # Return a neutral context so the LLM can still answer with a graceful deflection.
+        logger.error(f"Pinecone vector search unavailable: {type(e).__name__}: {e}")
+        return (
+            "Vector knowledge base is temporarily unavailable. "
+            "Answer based on general JoSAA counselling knowledge and ask the user for their rank "
+            "if needed; do NOT invent specific cutoff numbers."
+        )
+
     matches = results.get("matches", [])
     if not matches:
         return "No relevant college information found in the database."

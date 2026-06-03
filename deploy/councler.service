@@ -1,0 +1,29 @@
+# systemd unit to bring up the stack via docker compose on boot.
+# Install to: /etc/systemd/system/councler.service
+# Enable:     sudo systemctl enable --now councler
+#
+# Logs:       journalctl -u councler -f
+#             docker compose -f /srv/councler/deploy/docker-compose.prod.yml logs -f backend
+
+[Unit]
+Description=Councler (FastAPI + Redis) production stack
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/srv/councler
+Environment=COMPOSE_PROJECT_NAME=councler
+
+# --build only runs when the Dockerfile / sources changed (uses layer cache)
+ExecStartPre=/usr/bin/docker compose -f deploy/docker-compose.prod.yml --env-file .env pull --ignore-buildable
+ExecStart=/usr/bin/docker compose -f deploy/docker-compose.prod.yml --env-file .env up -d --build --remove-orphans
+ExecStop=/usr/bin/docker compose -f deploy/docker-compose.prod.yml --env-file .env down
+TimeoutStartSec=600
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

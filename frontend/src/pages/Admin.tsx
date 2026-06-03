@@ -77,19 +77,19 @@ const Admin = () => {
   return (
     <div className="min-h-screen text-stone-900 pb-12 overflow-x-hidden">
       {/* Banner */}
-      <div className="relative pt-24 pb-14 px-4 mb-8 overflow-hidden">
+      <div className="relative site-hero mb-8 overflow-hidden">
         <div className="absolute inset-0">
           <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1920&q=80&auto=format" alt="" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(28,18,10,0.65) 0%, rgba(28,18,10,0.50) 50%, rgba(28,18,10,0.35) 100%)" }} />
         </div>
-        <div className="container mx-auto max-w-7xl relative z-10">
+        <div className="site-container relative z-10">
           <FadeIn>
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div>
                 <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-white/90">
                   <Settings className="w-3.5 h-3.5" /> Admin Panel
                 </div>
-                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+                <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
                   Admin{" "}
                   <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-300 to-orange-300">Dashboard</span>
                 </h1>
@@ -102,7 +102,7 @@ const Admin = () => {
           </FadeIn>
         </div>
       </div>
-      <div className="container mx-auto px-4 relative z-10 max-w-7xl">
+      <div className="site-container relative z-10">
 
         {/* Live Stats from DB */}
         <FadeIn delay={0.2}>

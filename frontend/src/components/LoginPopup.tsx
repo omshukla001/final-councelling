@@ -9,7 +9,9 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { useLocation, useNavigate } from "react-router-dom";
+
+const AUTO_PROMPT_KEY = "loginAutoPromptShown";
+const AUTO_PROMPT_DELAY_MS = 10_000;
 
 const LoginPopup = () => {
   const { user, showLoginPopup, setShowLoginPopup, sendPhoneOTP, verifyPhoneOTP, loginWithGoogle } = useAuth();
@@ -23,18 +25,18 @@ const LoginPopup = () => {
   const [phoneAuthAvailable, setPhoneAuthAvailable] = useState(true);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // Trigger from ProtectedRoute redirects
+  // Auto-open the popup once per session, 10s after first load, only if signed out.
   useEffect(() => {
-    const locState = location.state as { triggerLoginPopup?: boolean; from?: any } | null;
-    if (locState?.triggerLoginPopup && !user) {
-      setShowLoginPopup(true);
-      // Clean up the state so refreshing doesn't pop it again
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [location, navigate, user, setShowLoginPopup]);
+    if (user) return;
+    if (sessionStorage.getItem(AUTO_PROMPT_KEY)) return;
+    const t = setTimeout(() => {
+      if (!sessionStorage.getItem(AUTO_PROMPT_KEY)) {
+        sessionStorage.setItem(AUTO_PROMPT_KEY, "1");
+        setShowLoginPopup(true);
+      }
+    }, AUTO_PROMPT_DELAY_MS);
+    return () => clearTimeout(t);
+  }, [user, setShowLoginPopup]);
 
   // Reset on open
   useEffect(() => {

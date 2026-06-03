@@ -28,7 +28,16 @@ class Settings(BaseSettings):
     RAZORPAY_KEY_ID: str = ""
     RAZORPAY_KEY_SECRET: str = ""
     RAZORPAY_WEBHOOK_SECRET: str = ""
-    
+
+    # Firebase Admin SDK credentials — supply ONE of:
+    #   FIREBASE_CREDENTIALS_JSON   : the full service-account JSON as a single-line string
+    #   FIREBASE_CREDENTIALS_BASE64 : the service-account JSON, base64-encoded (safer in CI/env)
+    #   FIREBASE_CREDENTIALS_PATH   : filesystem path to the JSON (mounted as a secret)
+    # If none are set, auth falls back to the legacy file next to run.py (dev convenience only).
+    FIREBASE_CREDENTIALS_JSON: str = ""
+    FIREBASE_CREDENTIALS_BASE64: str = ""
+    FIREBASE_CREDENTIALS_PATH: str = ""
+
     # Database (MongoDB)
     MONGO_URI: str = "mongodb://localhost:27017"
     MONGO_DB_NAME: str = "councler_v2"

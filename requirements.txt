@@ -24,6 +24,9 @@ httpx>=0.26.0
 # Payment Integration
 razorpay>=2.0.1
 
+# Authentication (Firebase Admin SDK)
+firebase-admin>=6.5.0
+
 # Logging
 loguru>=0.7.0
 

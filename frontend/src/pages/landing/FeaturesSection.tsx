@@ -106,39 +106,49 @@ export const FeaturesSection = () => {
   ];
 
   return (
-    <section className="py-24 px-6 sm:px-12 md:px-24">
-      <div className="max-w-7xl mx-auto">
+    <section className="site-section bg-section-cream">
+      <div className="site-container">
         <FadeIn>
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 border border-violet-200 mb-5">
-              <Sparkles className="w-3.5 h-3.5 text-violet-500" />
-              <span className="text-xs font-bold text-violet-600">Powerful Tools</span>
+          <div className="text-center max-w-2xl mx-auto site-section-header">
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5 bg-white"
+              style={{ border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
+            >
+              <Sparkles className="w-3.5 h-3.5" style={{ color: "#FF6B35" }} />
+              <span className="text-xs font-bold" style={{ color: "#1A1A1A" }}>Powerful Tools</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-stone-800">
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4" style={{ color: "#1A1A1A", lineHeight: 1.15 }}>
               Everything You Need for{" "}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-orange-500">JEE Counselling</span>
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(90deg, #FF6B35 0%, #F7B267 50%, #EC407A 100%)" }}>JEE Counselling</span>
             </h2>
-            <p className="text-stone-500 text-lg">Six powerful features. One platform. Zero confusion.</p>
+            <p className="text-lg" style={{ color: "#4A4A4A" }}>Six powerful features. One platform. Zero confusion.</p>
           </div>
         </FadeIn>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           {features.map((f, i) => (
-            <FadeIn key={i} delay={i * 0.07}>
+            <FadeIn key={i} delay={i * 0.06}>
               <Link to={f.link} className="tilt-card block h-full">
-                <div className={`group relative rounded-2xl overflow-hidden shadow-sm cursor-pointer transition-all duration-400 hover:shadow-xl ${f.accent} h-full flex flex-col press-card`}>
-                  <div className="relative h-40 overflow-hidden">
-                    <img src={f.img} alt={f.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div
+                  className={`group relative overflow-hidden bg-white cursor-pointer h-full flex flex-col transition-all duration-300 hover:-translate-y-1.5 ${f.accent}`}
+                  style={{
+                    borderRadius: 24,
+                    border: "1px solid rgba(0,0,0,0.06)",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
+                  }}
+                >
+                  <div className="relative h-36 overflow-hidden">
+                    <img src={f.img} alt={f.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.08]" />
                     <div className={`absolute inset-0 bg-gradient-to-t ${f.overlay}`} />
                     <div className="absolute inset-0 p-4 flex flex-col justify-end">
-                      <div className="mb-2">{f.preview}</div>
+                      <div>{f.preview}</div>
                     </div>
-                    <div className={`absolute top-3 left-3 w-10 h-10 rounded-xl ${f.iconBg} flex items-center justify-center text-white shadow-lg`}>{f.icon}</div>
+                    <div className={`absolute top-3 left-3 w-10 h-10 rounded-xl ${f.iconBg} flex items-center justify-center text-white shadow-md ring-1 ring-white/40`}>{f.icon}</div>
                   </div>
-                  <div className="p-5 flex-1 flex flex-col bg-white">
-                    <h3 className="text-base font-bold text-stone-800 mb-1.5 tracking-tight group-hover:text-orange-600 transition-colors">{f.title}</h3>
-                    <p className="text-sm text-stone-500 leading-relaxed mb-3 flex-1">{f.desc}</p>
-                    <div className="flex items-center gap-1 text-sm font-semibold text-orange-600 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                      Try it now <ArrowUpRight className="w-4 h-4" />
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h3 className="text-[16px] font-bold mb-1.5 tracking-tight transition-colors" style={{ color: "#1A1A1A" }}>{f.title}</h3>
+                    <p className="text-[13px] leading-relaxed mb-4 flex-1" style={{ color: "#4A4A4A" }}>{f.desc}</p>
+                    <div className="flex items-center gap-1 text-[13px] font-semibold opacity-80 group-hover:opacity-100 group-hover:gap-2 transition-all duration-300" style={{ color: "#FF6B35" }}>
+                      Try it now <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </div>
                   </div>
                 </div>

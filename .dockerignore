@@ -1,0 +1,65 @@
+# Prevent secrets, local state, and build garbage from entering the image.
+# If a pattern matches a directory, everything under it is excluded.
+
+# ── Secrets & local config ────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+!.env.production.example
+*firebase-adminsdk*.json
+*firebase*credentials*.json
+*.pem
+*.key
+*service-account*.json
+
+# ── VCS & editor ──────────────────────────────────────────────────────────
+.git
+.gitignore
+.github
+.vscode
+.idea
+.claude
+*.swp
+.DS_Store
+
+# ── Python local build artefacts ──────────────────────────────────────────
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# ── Node (frontend build happens inside the Dockerfile stage) ─────────────
+frontend/node_modules
+frontend/dist
+frontend/.vite
+frontend/coverage
+
+# ── Runtime / generated ───────────────────────────────────────────────────
+logs/
+reports/
+*.log
+tmp/
+data_pipeline/
+new_data_extracted/
+scripts/
+data/
+
+# ── Misc ──────────────────────────────────────────────────────────────────
+Makefile
+README.md
+*.md
+!app/**/*.md
+docker-compose.yml
+docker-compose.*.yml
+!deploy/docker-compose.prod.yml
+Dockerfile.backend
+Dockerfile.frontend

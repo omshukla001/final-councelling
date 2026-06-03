@@ -59,8 +59,8 @@ const App = () => (
                 <main className="flex-1 flex flex-col">
                   <Routes>
                     {/* Public routes */}
-                    <Route path="/login" element={<Navigate to="/" state={{ triggerLoginPopup: true }} replace />} />
-                    <Route path="/signup" element={<Navigate to="/" state={{ triggerLoginPopup: true }} replace />} />
+                    <Route path="/login" element={<Navigate to="/" replace />} />
+                    <Route path="/signup" element={<Navigate to="/" replace />} />
 
                     {/* Protected routes — require sign-in */}
                     <Route path="/" element={<Index />} />

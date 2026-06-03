@@ -8,6 +8,7 @@ import { Lock } from "lucide-react";
 import { CollegeService, College as BasicCollege } from "@/services/api";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend, LineChart, Line } from "recharts";
 import { AtmosphericGlow, FadeIn } from "@/components/ui/LayoutAtoms";
+import SectionCompare from "@/components/compare/SectionCompare";
 import type { CollegeData, BranchCutoff, CutoffTrendEntry, ScrapedData } from "@/types/college";
 
 interface College extends BasicCollege {}
@@ -42,9 +43,15 @@ const extractLPA = (str: string) => {
 
 const getMetric = (college: CollegeData, type: string) => {
   const scraped = college?.scraped_data || {};
+  const inst = (scraped?.placement_summary as Record<string, unknown> | undefined)?.institutional_totals as Record<string, unknown> | undefined;
+  const np = scraped?.new_placements as Record<string, unknown> | undefined;
+  const toNum = (v: unknown): number => (typeof v === "number" && Number.isFinite(v) ? v : 0);
+  const rupeesToLPA = (v: number) => (v > 0 ? v / 100000 : 0);
   switch (type) {
-    case "avg_pkg": return extractLPA(extractStat(scraped?.placements, /average|avg/i));
-    case "highest_pkg": return extractLPA(extractStat(scraped?.placements, /highest|max/i));
+    case "avg_pkg":
+      return toNum(inst?.average_lpa) || rupeesToLPA(toNum(np?.average_package)) || extractLPA(extractStat(scraped?.placements, /average|avg/i));
+    case "highest_pkg":
+      return toNum(inst?.highest_lpa) || rupeesToLPA(toNum(np?.highest_package)) || extractLPA(extractStat(scraped?.placements, /highest|max/i));
     case "campus_size": { const raw = scraped?.details?.campus_size || ""; const num = String(raw).match(/\d+/); return num ? parseInt(num[0]) : 0; }
     default: return 0;
   }
@@ -142,17 +149,17 @@ const Compare = () => {
       <AtmosphericGlow />
 
       {/* Hero Banner */}
-      <div className="relative pt-24 pb-14 px-4 mb-8 overflow-hidden">
+      <div className="relative site-hero mb-8 overflow-hidden">
         <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1920&q=80&auto=format" alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(28,18,10,0.65) 0%, rgba(28,18,10,0.50) 50%, rgba(28,18,10,0.35) 100%)" }} />
-        <div className="container mx-auto max-w-7xl relative z-10">
+        <div className="site-container relative z-10">
           <FadeIn>
             <div className="flex flex-col md:flex-row justify-between items-end pb-4 gap-6">
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-md bg-white/20 backdrop-blur-md border border-white/25 text-xs font-semibold text-white">
                   <GitCompare className="w-3 h-3 text-white" /> Compare Colleges
                 </div>
-                <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-[0.9] text-white">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.05] text-white">
                   College <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-300">Comparison</span>
                 </h1>
               </div>
@@ -166,7 +173,7 @@ const Compare = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10 max-w-7xl">
+      <div className="site-container relative z-10">
 
         {/* Selected Slots */}
         <FadeIn delay={0.1}>
@@ -274,6 +281,16 @@ const Compare = () => {
                   </ResponsiveContainer>
                 </div>
               </div>
+            </FadeIn>
+
+            <FadeIn delay={0.35}>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold">Section-wise Diff</h2>
+                <span className="text-xs font-semibold text-stone-500 border border-stone-200 px-3 py-1 rounded bg-white/60">
+                  Auto-analysed across {colleges.length} colleges
+                </span>
+              </div>
+              <SectionCompare colleges={colleges} colors={COLLEGE_COLORS} />
             </FadeIn>
 
             {commonBranches.length > 0 && (

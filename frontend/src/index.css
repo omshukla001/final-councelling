@@ -6,35 +6,67 @@
 
 @layer base {
   :root {
-    --background: 38 22% 92%;
-    --foreground: 25 30% 12%;
-    --card: 35 25% 98%;
-    --card-foreground: 25 30% 12%;
-    --popover: 35 25% 98%;
-    --popover-foreground: 25 30% 12%;
-    --primary: 262 83% 58%;
+    /* Core surfaces — light, airy, premium */
+    --background: 30 100% 98%;       /* #FFF9F3 cream */
+    --foreground: 0 0% 10%;          /* #1A1A1A charcoal */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    /* Brand — warm orange primary, pink secondary, purple accent */
+    --primary: 16 100% 60%;          /* #FF6B35 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 35 20% 91%;
-    --secondary-foreground: 25 30% 12%;
-    --muted: 35 20% 91%;
-    --muted-foreground: 25 10% 42%;
-    --accent: 35 20% 91%;
-    --accent-foreground: 25 30% 12%;
+    --secondary: 340 82% 59%;        /* #EC407A */
+    --secondary-foreground: 0 0% 100%;
+    --accent: 262 83% 58%;           /* #7C3AED */
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 30 50% 96%;             /* very light cream */
+    --muted-foreground: 0 0% 42%;    /* #6B6B6B */
+
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 35 18% 85%;
-    --input: 35 18% 85%;
-    --ring: 262 83% 58%;
+
+    --border: 0 0% 94%;              /* rgba(0,0,0,0.06) equivalent */
+    --input: 0 0% 94%;
+    --ring: 16 100% 60%;
     --radius: 1rem;
 
-    --sidebar-background: 35 30% 96%;
-    --sidebar-foreground: 25 30% 12%;
-    --sidebar-primary: 262 83% 58%;
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 10%;
+    --sidebar-primary: 16 100% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 35 20% 91%;
-    --sidebar-accent-foreground: 25 30% 12%;
-    --sidebar-border: 35 18% 85%;
-    --sidebar-ring: 262 83% 58%;
+    --sidebar-accent: 30 50% 96%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 0 0% 94%;
+    --sidebar-ring: 16 100% 60%;
+
+    /* Extended palette — use via var(--brand-*) */
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #FFF9F3;
+    --bg-tertiary: #FFF0E6;
+    --text-primary: #1A1A1A;
+    --text-secondary: #4A4A4A;
+    --text-tertiary: #6B6B6B;
+    --brand-orange: #FF6B35;
+    --brand-orange-2: #F7931E;
+    --brand-pink: #EC407A;
+    --brand-purple: #7C3AED;
+    --brand-success: #10B981;
+    --brand-warning: #F59E0B;
+    --border-soft: rgba(0, 0, 0, 0.06);
+    --border-softer: rgba(0, 0, 0, 0.04);
+
+    /* Spacing scale (4px base) */
+    --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+    --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+    --s-9: 80px; --s-10: 120px;
+
+    /* Motion */
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   }
 }
 
@@ -42,39 +74,178 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-primary);
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     letter-spacing: -0.025em;
     font-weight: 800;
+    color: var(--text-primary);
   }
 }
 
 @layer utilities {
+  /* ── Layout primitives (production-grade spacing & width) ─────────────── */
+  /* Consistent horizontal container: caps at 7xl (1280px), breathing room on
+     every breakpoint. Use on the innermost wrapper of every section. */
+  .site-container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 80rem; /* 1280px */
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  @media (min-width: 640px) {
+    .site-container { padding-left: 1.5rem; padding-right: 1.5rem; }
+  }
+  @media (min-width: 1024px) {
+    .site-container { padding-left: 2rem; padding-right: 2rem; }
+  }
+
+  /* Narrow container for long-form content (prose, forms). */
+  .site-container-narrow {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 56rem; /* 896px */
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  @media (min-width: 640px) {
+    .site-container-narrow { padding-left: 1.5rem; padding-right: 1.5rem; }
+  }
+
+  /* Standard vertical section rhythm — tight, production density. */
+  .site-section { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+  @media (min-width: 768px) { .site-section { padding-top: 3.5rem; padding-bottom: 3.5rem; } }
+  @media (min-width: 1024px) { .site-section { padding-top: 4.5rem; padding-bottom: 4.5rem; } }
+
+  .site-section-tight { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+  @media (min-width: 768px) { .site-section-tight { padding-top: 2rem; padding-bottom: 2rem; } }
+
+  /* Page hero wrapper — sits just under the fixed navbar. */
+  .site-hero { padding-top: 5rem; padding-bottom: 1.5rem; }
+  @media (min-width: 768px) { .site-hero { padding-top: 5.5rem; padding-bottom: 2rem; } }
+  @media (min-width: 1024px) { .site-hero { padding-top: 6rem; padding-bottom: 2.5rem; } }
+
+  /* Consistent vertical spacing between a section's eyebrow/title and its body. */
+  .site-section-header { margin-bottom: 1.75rem; }
+  @media (min-width: 768px) { .site-section-header { margin-bottom: 2.25rem; } }
+  @media (min-width: 1024px) { .site-section-header { margin-bottom: 2.75rem; } }
+
+  /* Typography scale — use sparingly; prefer tailwind classes in markup. */
+  .h-display { font-size: 2.25rem; line-height: 1.1; letter-spacing: -0.02em; font-weight: 800; }
+  @media (min-width: 640px) { .h-display { font-size: 3rem; } }
+  @media (min-width: 768px) { .h-display { font-size: 3.5rem; } }
+  @media (min-width: 1024px) { .h-display { font-size: 4rem; } }
+
+  .h-1 { font-size: 1.875rem; line-height: 1.15; letter-spacing: -0.02em; font-weight: 800; }
+  @media (min-width: 768px) { .h-1 { font-size: 2.5rem; } }
+  @media (min-width: 1024px) { .h-1 { font-size: 3rem; } }
+
+  .h-2 { font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.015em; font-weight: 700; }
+  @media (min-width: 768px) { .h-2 { font-size: 2rem; } }
+
+  .h-3 { font-size: 1.25rem; line-height: 1.3; font-weight: 700; }
+  @media (min-width: 768px) { .h-3 { font-size: 1.5rem; } }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.875rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  /* Consistent card */
+  .prod-card {
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: transform 250ms, box-shadow 250ms, border-color 250ms;
+  }
+  .prod-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px -12px rgba(0,0,0,0.12);
+  }
+
   .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #7c3aed, #6366f1, #818cf8);
+    background-image: linear-gradient(90deg, #FF6B35 0%, #F7B267 50%, #EC407A 100%);
   }
   .gradient-text-warm {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #f97316, #f59e0b, #eab308);
+    background-image: linear-gradient(90deg, #FF6B35, #F7931E, #EC407A);
   }
   .gradient-text-cool {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6);
+    background-image: linear-gradient(135deg, #7C3AED, #EC407A, #FF6B35);
   }
   .gradient-text-green {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #10b981, #06b6d4);
+    background-image: linear-gradient(135deg, #10B981, #34D399);
   }
   .gradient-bg {
-    background: linear-gradient(135deg, #7c3aed, #6366f1);
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
   }
   .gradient-bg-warm {
-    background: linear-gradient(135deg, #f97316, #f59e0b);
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+  }
+
+  /* New premium section backgrounds */
+  .bg-section-cream {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF9F3 100%);
+  }
+  .bg-section-peach {
+    background: linear-gradient(135deg, #FFF9F3 0%, #FFE8D6 50%, #FFD4B5 100%);
+  }
+  .bg-section-soft {
+    background: #FFF9F3;
+  }
+
+  /* Premium card — unified look across site */
+  .card-premium {
+    background: #FFFFFF;
+    border: 1px solid var(--border-soft);
+    border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth), border-color 0.3s var(--ease-smooth);
+  }
+  .card-premium:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Premium primary CTA */
+  .btn-primary-warm {
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+    color: #FFFFFF;
+    font-weight: 700;
+    padding: 14px 28px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(255, 107, 53, 0.25);
+    transition: transform 0.2s var(--ease-smooth), box-shadow 0.2s var(--ease-smooth);
+  }
+  .btn-primary-warm:hover {
+    transform: scale(1.02);
+    box-shadow: 0 14px 40px rgba(255, 107, 53, 0.35);
   }
 
   /* Frosted glass */
@@ -92,10 +263,11 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
   }
   .glass-dark {
-    background: rgba(30, 20, 50, 0.6);
+    background: rgba(26, 26, 26, 0.88);
     backdrop-filter: blur(24px) saturate(1.4);
     -webkit-backdrop-filter: blur(24px) saturate(1.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #FFFFFF;
   }
 
   .bento-card {
@@ -165,22 +337,22 @@
   animation: shimmer 1.5s infinite;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+/* Scrollbar — warm orange */
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.25); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.5); }
+::-webkit-scrollbar-thumb { background: rgba(255, 107, 53, 0.25); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 53, 0.5); }
 
-::selection { background: rgba(139, 92, 246, 0.18); color: #1a1a1a; }
-*:focus-visible { outline: 2px solid rgba(139, 92, 246, 0.5); outline-offset: 2px; }
+::selection { background: rgba(255, 107, 53, 0.18); color: #1a1a1a; }
+*:focus-visible { outline: 3px solid rgba(255, 107, 53, 0.55); outline-offset: 2px; border-radius: 4px; }
 
-/* Warm body - slightly deeper cream for card contrast */
+/* Light airy body — cream with very subtle warm radial glow */
 body {
-  background-color: #f0ece4;
+  background-color: #FFF9F3;
   background-image:
-    radial-gradient(ellipse at 20% 0%, rgba(251, 191, 36, 0.07) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(245, 158, 11, 0.04) 0%, transparent 60%);
+    radial-gradient(ellipse at 15% 0%, rgba(255, 107, 53, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 10%, rgba(236, 64, 122, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(124, 58, 237, 0.035) 0%, transparent 60%);
 }
 
 /* Animated gradient border */
@@ -196,7 +368,7 @@ body {
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(139,92,246,0.3), rgba(251,191,36,0.3), rgba(6,182,212,0.3));
+  background: linear-gradient(135deg, rgba(255,107,53,0.35), rgba(236,64,122,0.3), rgba(124,58,237,0.3));
   background-size: 200% 200%;
   animation: gradient-shift 4s ease infinite;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -218,24 +390,24 @@ body {
 /* Feature card */
 .feature-card {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 .feature-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 25px 50px -15px rgba(139, 92, 246, 0.12), 0 8px 24px rgba(0,0,0,0.06);
+  box-shadow: 0 25px 50px -15px rgba(255, 107, 53, 0.16), 0 8px 24px rgba(0,0,0,0.06);
 }
 
-/* Hero photo bg */
+/* Hero photo bg — light */
 .hero-photo-bg {
   background:
-    linear-gradient(135deg, rgba(99,60,180,0.85) 0%, rgba(45,50,130,0.8) 30%, rgba(20,80,120,0.75) 60%, rgba(20,120,100,0.7) 100%),
-    linear-gradient(to bottom, rgba(247,243,237,0) 60%, rgba(247,243,237,1) 100%);
-  background-blend-mode: normal;
+    linear-gradient(135deg, rgba(255, 249, 243, 0.6) 0%, rgba(255, 232, 214, 0.5) 50%, rgba(255, 212, 181, 0.5) 100%),
+    linear-gradient(to bottom, rgba(255, 249, 243, 0) 60%, rgba(255, 249, 243, 1) 100%);
 }
 
-/* Section photo overlays */
+/* Section photo overlays — light cream gradient */
 .photo-section {
   position: relative;
-  background: linear-gradient(135deg, #1e1040 0%, #0f2547 40%, #0a3040 70%, #103530 100%);
+  background: linear-gradient(135deg, #FFF9F3 0%, #FFF0E6 40%, #FFE8D6 70%, #FFD4B5 100%);
 }
 .photo-section::after {
   content: '';
@@ -244,7 +416,7 @@ body {
   left: 0;
   right: 0;
   height: 120px;
-  background: linear-gradient(to bottom, transparent, #f0ece4);
+  background: linear-gradient(to bottom, transparent, #FFF9F3);
   pointer-events: none;
 }
 .photo-section::before {
@@ -254,7 +426,7 @@ body {
   left: 0;
   right: 0;
   height: 120px;
-  background: linear-gradient(to top, transparent, #f0ece4);
+  background: linear-gradient(to top, transparent, #FFF9F3);
   pointer-events: none;
   z-index: 1;
 }
@@ -293,7 +465,7 @@ body {
 .typewriter-cursor::after {
   content: '|';
   animation: blink-cursor 1s step-end infinite;
-  color: #7c3aed;
+  color: #FF6B35;
   font-weight: 300;
 }
 @keyframes blink-cursor {
@@ -324,10 +496,10 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #7c3aed, #3b82f6, #06b6d4);
+  background: linear-gradient(90deg, #FF6B35, #F7B267, #EC407A);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s var(--ease-smooth);
   border-radius: 99px;
 }
 .gradient-underline:hover::after {
@@ -363,7 +535,7 @@ body {
   left: 0;
   right: 0;
   height: 80px;
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1440 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,40 C360,80 720,0 1080,40 C1260,60 1380,50 1440,40 L1440,80 L0,80 Z' fill='%23f0ece4'/%3E%3C/svg%3E") no-repeat center;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1440 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,40 C360,80 720,0 1080,40 C1260,60 1380,50 1440,40 L1440,80 L0,80 Z' fill='%23FFF9F3'/%3E%3C/svg%3E") no-repeat center;
   background-size: cover;
   pointer-events: none;
   z-index: 5;
@@ -388,11 +560,57 @@ body {
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.18);
   transform: translate(-50%, -50%);
   transition: width 0.5s, height 0.5s;
 }
 .btn-glow:hover::before {
-  width: 300px;
-  height: 300px;
+  width: 340px;
+  height: 340px;
+}
+
+/* ── Periodic shine on primary CTAs ── */
+@keyframes btn-shine {
+  0% { transform: translateX(-120%) skewX(-20deg); }
+  60% { transform: translateX(220%) skewX(-20deg); }
+  100% { transform: translateX(220%) skewX(-20deg); }
+}
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-shine::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 38%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+  transform: translateX(-120%) skewX(-20deg);
+  animation: btn-shine 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── Subtle soft blob / mesh for hero backgrounds ── */
+@keyframes blob-drift-a { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(28px,-22px) scale(1.08); } }
+@keyframes blob-drift-b { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-26px,18px) scale(0.94); } }
+.blob-soft {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.55;
+  pointer-events: none;
+  will-change: transform;
+}
+.blob-soft.a { animation: blob-drift-a 16s ease-in-out infinite; }
+.blob-soft.b { animation: blob-drift-b 20s ease-in-out infinite; }
+
+/* Subtle light grid overlay (5% opacity) — use with bg utilities for texture */
+.grid-overlay-soft {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
 }

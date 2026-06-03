@@ -40,13 +40,14 @@ async def predict_rank(
             detail=f"Invalid quota. Must be one of: {QuotaFilteringService.VALID_QUOTAS}"
         )
     
+    # ── Authenticate & Enforce Limits ──
+    actual_uid = user_token["uid"]
+
     # Check cache
-    cache_key = None
-    if user_id:
-        cache_key = CacheKeys.rank_prediction(str(user_id), request.jee_rank, request.category)
-        cached = CacheService.get(cache_key)
-        if cached:
-            return RankPredictionResponse(**cached)
+    cache_key = CacheKeys.rank_prediction(actual_uid, request.jee_rank, request.category)
+    cached = CacheService.get(cache_key)
+    if cached:
+        return RankPredictionResponse(**cached)
     
     # Get rank range using QuotaFilteringService
     rank_range = QuotaFilteringService.get_rank_range_for_category_quota(
@@ -62,9 +63,6 @@ async def predict_rank(
         "min": max(1, request.jee_rank - confidence_margin),
         "max": request.jee_rank + confidence_margin
     }
-    
-    # ── Authenticate & Enforce Limits ──
-    actual_uid = user_token["uid"]
         
     db = get_mongo_db()
     users_col = db["users"]
