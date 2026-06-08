@@ -184,7 +184,7 @@ export const HeroSection = () => {
                 >
                   <span className="inline-flex rounded-full h-2 w-2" style={{ background: "#7C3AED" }} />
                   <span className="text-[12px] font-semibold tracking-wide" style={{ color: "#1A1A1A" }}>
-                    2025 Season Live
+                    2026 Season Live
                   </span>
                   <Sparkles className="w-3 h-3" style={{ color: "#FF6B35" }} />
                 </motion.div>
