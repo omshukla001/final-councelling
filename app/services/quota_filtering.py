@@ -51,47 +51,50 @@ class QuotaFilteringService:
         except ValueError:
             return 0
 
-    # ── In-memory cache for lightning-fast repeated queries ──
-    _cutoffs_cache: List[Dict] = []
+    # ── Lightweight cache: ONLY master_colleges (small ~few-thousand-doc collection). ──
+    # Historical cutoffs are NEVER bulk-loaded into RAM — they are queried on demand,
+    # filtered server-side by Mongo, so only the matched rows enter memory. This keeps
+    # the service inside the 512MB free-tier limit (no more OOM / 502).
     _college_info_cache: Dict[str, Dict] = {}
-    _cache_loaded: bool = False
-    _cache_loaded_at: float = 0.0
-    _CACHE_TTL: int = 3600  # Refresh cache every 1 hour
+    _college_cache_loaded: bool = False
+    _college_cache_loaded_at: float = 0.0
+    _index_ensured: bool = False
+    _CACHE_TTL: int = 3600  # Refresh master_colleges cache every 1 hour
+
+    # Years considered "recent" when no explicit year is requested.
+    RECENT_YEARS: List[int] = [2022, 2023, 2024, 2025]
 
     @classmethod
-    def _ensure_cache(cls):
-        """Load ALL historical cutoffs into RAM once. Auto-refreshes after TTL expires."""
+    def _ensure_college_cache(cls):
+        """Cache the small master_colleges collection for name/info lookups."""
         import time
         now = time.time()
-        
-        if cls._cache_loaded and (now - cls._cache_loaded_at) < cls._CACHE_TTL:
+        if cls._college_cache_loaded and (now - cls._college_cache_loaded_at) < cls._CACHE_TTL:
             return
-        
+
         mongo_db = get_mongo_db()
-        col = mongo_db["historical_cutoffs"]
-        
-        action = "Refreshing" if cls._cache_loaded else "Loading"
-        logger.info(f"{action} historical_cutoffs into memory cache...")
-        t0 = time.time()
-        
-        # Fetch only recent 4 years — reduces memory from ~500k to ~200k docs
-        recent_years = [2022, 2023, 2024, 2025]
-        projection = {
-            "college_id": 1, "branch": 1, "category": 1, "quota": 1,
-            "closing_rank": 1, "opening_rank": 1, "year": 1, "round": 1, "gender": 1
-        }
-        cls._cutoffs_cache = list(col.find({"year": {"$in": recent_years}}, projection))
-        
-        # Batch-load master college info
-        unique_ids = list(set(d.get("college_id") for d in cls._cutoffs_cache if d.get("college_id")))
-        if unique_ids:
-            for m_doc in mongo_db["master_colleges"].find({"college_id": {"$in": unique_ids}}):
-                cls._college_info_cache[m_doc.get("college_id")] = m_doc
-        
-        elapsed = time.time() - t0
-        logger.info(f"Cache loaded: {len(cls._cutoffs_cache)} cutoffs, {len(cls._college_info_cache)} colleges in {elapsed:.2f}s")
-        cls._cache_loaded = True
-        cls._cache_loaded_at = now
+        cache: Dict[str, Dict] = {}
+        for m_doc in mongo_db["master_colleges"].find({}):
+            cache[m_doc.get("college_id")] = m_doc
+        cls._college_info_cache = cache
+        cls._college_cache_loaded = True
+        cls._college_cache_loaded_at = now
+        logger.info(f"master_colleges cache loaded: {len(cache)} colleges")
+
+    @classmethod
+    def _ensure_index(cls, col):
+        """Create a compound index so the on-demand cutoff query stays fast. Runs once."""
+        if cls._index_ensured:
+            return
+        try:
+            col.create_index(
+                [("category", 1), ("quota", 1), ("year", 1), ("closing_rank", 1)],
+                name="cutoff_query_idx",
+                background=True,
+            )
+        except Exception as e:
+            logger.warning(f"Could not ensure cutoff index (continuing anyway): {e}")
+        cls._index_ensured = True
 
     @staticmethod
     def filter_cutoffs(
@@ -104,37 +107,38 @@ class QuotaFilteringService:
         counselling_type: str = "JOSAA",
         gender: Optional[str] = "Gender-Neutral"
     ) -> List[MongoCutoff]:
-        # Ensure in-memory cache is ready
-        QuotaFilteringService._ensure_cache()
-        
-        # Build list of years to check
-        years_to_check = []
+        # Ensure the small college-info cache is ready (master_colleges only)
+        QuotaFilteringService._ensure_college_cache()
+
+        # Build list of years to check. When unspecified, default to recent years
+        # so the on-demand query stays bounded.
         if year is None:
-            years_to_check = None  # Accept all years
+            years_to_check = list(QuotaFilteringService.RECENT_YEARS)
         elif isinstance(year, int):
             years_to_check = [year]
-        elif isinstance(year, list) or isinstance(year, tuple):
+        elif isinstance(year, (list, tuple)):
             years_to_check = list(year)
-            
-        logger.info(f"Cache filter: category={category}, quota={quota}, year(s)={years_to_check}")
-        
+        else:
+            years_to_check = list(QuotaFilteringService.RECENT_YEARS)
+
+        logger.info(f"Cutoff query: category={category}, quota={quota}, year(s)={years_to_check}")
+
         # Normalize quota
         from app.constants import QUOTA_UNNORMALIZATION
-        
+
         if quota:
             if isinstance(quota, str):
                 quota_list = [quota.upper()]
             else:
                 quota_list = [q.upper() for q in quota]
-            
+
             all_variations = set()
             for q in quota_list:
                 variations = QUOTA_UNNORMALIZATION.get(q, [q])
                 all_variations.update(variations)
         else:
             all_variations = None
-        
-        # Filter from in-memory cache (microseconds)
+
         cat_upper = category.upper()
         gender_set = None
         if gender:
@@ -142,23 +146,34 @@ class QuotaFilteringService:
                 gender_set = {"Gender-Neutral", "NA"}
             else:
                 gender_set = {gender}
-        
-        filtered = []
-        for doc in QuotaFilteringService._cutoffs_cache:
-            if doc.get("category") != cat_upper:
-                continue
-            if gender_set and doc.get("gender") not in gender_set:
-                continue
-            if years_to_check is not None and doc.get("year") not in years_to_check:
-                continue
-            if min_rank is not None and (doc.get("closing_rank") or 0) < min_rank:
-                continue
-            if max_rank is not None and (doc.get("closing_rank") or 0) > max_rank:
-                continue
-            if all_variations is not None and doc.get("quota") not in all_variations:
-                continue
-            filtered.append(doc)
-        
+
+        # Build the MongoDB filter — push everything server-side so only matched
+        # rows (a few thousand at most) are ever held in RAM.
+        mongo_db = get_mongo_db()
+        col = mongo_db["historical_cutoffs"]
+        QuotaFilteringService._ensure_index(col)
+
+        query: Dict[str, Any] = {"category": cat_upper, "year": {"$in": years_to_check}}
+        if all_variations is not None:
+            query["quota"] = {"$in": list(all_variations)}
+        if gender_set is not None:
+            query["gender"] = {"$in": list(gender_set)}
+
+        rank_filter: Dict[str, int] = {}
+        if min_rank is not None:
+            rank_filter["$gte"] = min_rank
+        if max_rank is not None:
+            rank_filter["$lte"] = max_rank
+        if rank_filter:
+            query["closing_rank"] = rank_filter
+
+        projection = {
+            "college_id": 1, "branch": 1, "category": 1, "quota": 1,
+            "closing_rank": 1, "opening_rank": 1, "year": 1, "round": 1, "gender": 1
+        }
+        filtered = list(col.find(query, projection))
+        logger.info(f"Cutoff query matched {len(filtered)} rows")
+
         # Map to MongoCutoff objects
         results = []
         for doc in filtered:
