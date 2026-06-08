@@ -7,12 +7,27 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import os
+import asyncio
+import httpx
 from app.config import settings
 from app.utils.logger import logger
 from app.middleware.performance import PerformanceMiddleware
 from app.core.security_headers import SecurityHeadersMiddleware
 from app.core.rate_limiter import RateLimitMiddleware
 from app.core.request_id import RequestIdMiddleware
+
+
+async def keep_alive():
+    """Ping own /health every 5 minutes to prevent Render free tier spindown."""
+    await asyncio.sleep(60)  # wait for app to fully start
+    url = os.getenv("RENDER_EXTERNAL_URL", "http://localhost:8000") + "/health"
+    async with httpx.AsyncClient() as client:
+        while True:
+            try:
+                await client.get(url, timeout=10)
+            except Exception:
+                pass
+            await asyncio.sleep(270)  # 4.5 minutes
 
 
 @asynccontextmanager
@@ -22,10 +37,13 @@ async def lifespan(app: FastAPI):
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     from app.db.mongo import connect_to_mongo
     connect_to_mongo()
-    
+
+    task = asyncio.create_task(keep_alive())
+
     yield  # Application runs here
-    
+
     # ── Shutdown ──
+    task.cancel()
     logger.info("Shutting down application")
     from app.db.mongo import close_mongo_connection
     close_mongo_connection()

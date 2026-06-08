@@ -52,6 +52,7 @@ data_pipeline/
 new_data_extracted/
 scripts/
 data/
+!app/data/
 
 # ── Misc ──────────────────────────────────────────────────────────────────
 Makefile

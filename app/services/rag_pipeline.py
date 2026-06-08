@@ -9,7 +9,6 @@ from typing import Optional, List
 
 from openai import OpenAI
 from pinecone import Pinecone
-from sentence_transformers import SentenceTransformer  # noqa: F401 — also lazy-loaded in _get_embed_model
 from app.config import settings
 from app.utils.logger import logger
 
@@ -34,18 +33,20 @@ LOCAL_EMBED_MODEL = settings.EMBEDDING_MODEL
 GENERATION_MODEL = settings.GENERATION_MODEL
 TOP_K = settings.AI_TOP_K
 
-# ── Lazy-loaded embedding model (avoids 2-3s cold-start penalty) ──────────────
+# ── Lazy-loaded embedding model ───────────────────────────────────────────────
 _embed_model = None
 
 def _get_embed_model():
-    """Load SentenceTransformer on first use, not at import time."""
     global _embed_model
     if _embed_model is None:
         from sentence_transformers import SentenceTransformer
         logger.info("Loading SentenceTransformer embedding model...")
-        _embed_model = SentenceTransformer(LOCAL_EMBED_MODEL)
+        _embed_model = SentenceTransformer(LOCAL_EMBED_MODEL, device="cpu")
         logger.info("Embedding model loaded.")
     return _embed_model
+
+def _embed(text: str) -> list:
+    return _get_embed_model().encode(text).tolist()
 
 
 
@@ -102,7 +103,7 @@ def retrieve_context(question: str, chat_history: list = None, counselling_type:
 
     try:
         index = _get_pinecone_index()
-        query_embedding = _get_embed_model().encode(augmented_query).tolist()
+        query_embedding = _embed(augmented_query)
         results = index.query(
             vector=query_embedding,
             top_k=40,
