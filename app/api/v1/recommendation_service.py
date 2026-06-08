@@ -156,21 +156,7 @@ async def get_recommendations(request: CollegeRecommendationRequest, db=Depends(
         recommendations = []
         safe_count = target_count = dream_count = 0
 
-        # Check Premium Status once here
-        is_premium = False
-        if request.firebase_uid:
-            user_record = db["users"].find_one({"firebase_uid": request.firebase_uid})
-            if user_record and user_record.get("is_premium"):
-                is_premium = True
-                # Check premium expiry
-                if user_record.get("premium_until"):
-                    from datetime import datetime
-                    if datetime.utcnow() > user_record["premium_until"]:
-                        is_premium = False
-                        db["users"].update_one(
-                            {"firebase_uid": request.firebase_uid},
-                            {"$set": {"is_premium": False}}
-                        )
+        # Auth/payments removed — all content is public, nothing is redacted.
 
         for row in filtered_cutoffs:
             classification = ClassificationService.classify(
@@ -237,17 +223,6 @@ async def get_recommendations(request: CollegeRecommendationRequest, db=Depends(
                 for y in sorted(yr_map.keys(), reverse=True)
                 for h_row in [yr_map[y]]
             ]
-
-            # ── REDACTION LOGIC ──
-            if not is_premium and len(recommendations) >= 5:
-                # We redact the strings so they render safely in the frontend without leaking real data
-                # Classification is preserved so Target/Safe/Dream counts are perfectly accurate!
-                college.name = "Premium Content Locked"
-                college.type = "Locked"
-                college.state = "***"
-                branch.name = "Rank details locked. Upgrade to see."
-                cutoff_info.closing_rank = 0
-                historical_cutoffs = []
 
             recommendations.append(CollegeRecommendation(
                 college=college, branch=branch, classification=classification,
