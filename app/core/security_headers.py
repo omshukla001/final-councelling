@@ -43,13 +43,12 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         else:
             response.headers["Content-Security-Policy"] = (
                 "default-src 'self'; "
-                "script-src 'self' https://checkout.razorpay.com; "
+                "script-src 'self' 'unsafe-inline'; "
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
                 "font-src 'self' https://fonts.gstatic.com; "
-                "img-src 'self' data:; "
-                "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com "
-                "https://*.firebase.com https://api.groq.com https://*.razorpay.com; "
-                "frame-src 'self' https://api.razorpay.com; "
+                "img-src 'self' data: https:; "
+                "connect-src 'self' https:; "
+                "frame-src 'self' https://maps.google.com https://www.google.com/maps; "
                 "frame-ancestors 'none'"
             )
 
