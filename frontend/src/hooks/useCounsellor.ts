@@ -72,7 +72,9 @@ export function useCounsellor() {
   const [bufferRange, setBufferRange] = useState<number>(s?.bufferRange ?? 5000);
   const [branchPreferences, setBranchPreferences] = useState<string[]>(s?.branchPreferences ?? prefs.preferredBranches ?? []);
   const [examType, setExamType] = useState<ExamType>(s?.examType ?? (prefs.examType === "JEE Advanced" ? "JEE_ADVANCED" : "JEE_MAINS"));
-  const [category, setCategory] = useState(s?.category ?? prefs.category ?? "OPEN");
+  const [categories, setCategories] = useState<string[]>(
+    s?.categories ?? (Array.isArray(s?.category) ? s.category : (prefs.category ? [prefs.category] : ["OPEN"]))
+  );
   const [selectedQuotas, setSelectedQuotas] = useState<string[]>(s?.selectedQuotas ?? (prefs.quotas?.length ? prefs.quotas : ["AI", "HS", "OS"]));
   const [gender, setGender] = useState(s?.gender ?? prefs.gender ?? "Gender-Neutral");
 
@@ -99,9 +101,9 @@ export function useCounsellor() {
   // Persist to session
   useEffect(() => {
     sessionStorage.setItem(SESSION_KEY, JSON.stringify({
-      userRank, bufferRange, branchPreferences, examType, category, selectedQuotas, gender, results
+      userRank, bufferRange, branchPreferences, examType, categories, selectedQuotas, gender, results
     }));
-  }, [userRank, bufferRange, branchPreferences, examType, category, selectedQuotas, gender, results]);
+  }, [userRank, bufferRange, branchPreferences, examType, categories, selectedQuotas, gender, results]);
 
   // Load filters
   useEffect(() => {
@@ -124,10 +126,23 @@ export function useCounsellor() {
       } else {
         setSelectedQuotas(validSelected);
       }
-      if (!filters[examType].categories.includes(category)) setCategory(filters[examType].categories[0] || "OPEN");
+      const allowedCats = filters[examType].categories;
+      const validCats = categories.filter(c => allowedCats.includes(c));
+      setCategories(validCats.length > 0 ? validCats : [allowedCats[0] || "OPEN"]);
       if (!filters[examType].genders.includes(gender)) setGender(filters[examType].genders[0] || "Gender-Neutral");
     }
   }, [examType, filters]);
+
+  // Toggle a category in/out of the multi-select. Always keep at least one selected.
+  const toggleCategory = useCallback((c: string) => {
+    setCategories((prev) => {
+      if (prev.includes(c)) {
+        const next = prev.filter((x) => x !== c);
+        return next.length > 0 ? next : prev; // don't allow empty
+      }
+      return [...prev, c];
+    });
+  }, []);
 
   // Fetch counsellor sheet
   const fetchSheet = useCallback(async () => {
@@ -138,7 +153,7 @@ export function useCounsellor() {
     }
     updatePrefs({
       rank: userRank, examType: examType === "JEE_ADVANCED" ? "JEE Advanced" : "JEE Main",
-      category, quotas: selectedQuotas, gender, preferredBranches: branchPreferences,
+      category: categories[0] || "OPEN", quotas: selectedQuotas, gender, preferredBranches: branchPreferences,
     });
     setLoading(true);
     setError(null);
@@ -146,7 +161,7 @@ export function useCounsellor() {
       const res = await api.post("/counsellor/counsellor-sheet", {
         user_rank: rank, branch_preferences: branchPreferences,
         buffer_range: bufferRange, counselling_type: "JOSAA",
-        exam_type: examType, category, quota: selectedQuotas, gender,
+        exam_type: examType, category: categories, quota: selectedQuotas, gender,
       });
       setResults(res.data);
     } catch (err: unknown) {
@@ -155,7 +170,7 @@ export function useCounsellor() {
     } finally {
       setLoading(false);
     }
-  }, [userRank, branchPreferences, bufferRange, examType, category, selectedQuotas, gender, updatePrefs]);
+  }, [userRank, branchPreferences, bufferRange, examType, categories, selectedQuotas, gender, updatePrefs]);
 
   // Sync ordered choices when results change
   useEffect(() => {
@@ -206,7 +221,7 @@ export function useCounsellor() {
     // Form state
     userRank, setUserRank, bufferRange, setBufferRange,
     branchPreferences, setBranchPreferences, removeBranch,
-    examType, setExamType, category, setCategory,
+    examType, setExamType, categories, setCategories, toggleCategory,
     selectedQuotas, setSelectedQuotas, gender, setGender,
     // Results
     loading, results, error, orderedChoices, displayedColleges,

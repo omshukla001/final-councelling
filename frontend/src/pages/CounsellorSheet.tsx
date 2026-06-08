@@ -16,7 +16,7 @@ const CounsellorSheet = () => {
     // Form state
     userRank, setUserRank, bufferRange, setBufferRange,
     branchPreferences, setBranchPreferences, removeBranch,
-    examType, setExamType, category, setCategory,
+    examType, setExamType, categories, toggleCategory,
     selectedQuotas, setSelectedQuotas, gender, setGender,
     // Results
     loading, results, error, orderedChoices, displayedColleges,
@@ -41,8 +41,8 @@ const CounsellorSheet = () => {
        triggerPaymentFlow();
        return;
     }
-    exportCounsellorPdf({ choices: orderedChoices, userRank, category, gender, examType });
-  }, [orderedChoices, userRank, category, gender, examType, isPremium, triggerPaymentFlow]);
+    exportCounsellorPdf({ choices: orderedChoices, userRank, category: categories.join(", "), gender, examType });
+  }, [orderedChoices, userRank, categories, gender, examType, isPremium, triggerPaymentFlow]);
 
 
 
@@ -109,10 +109,10 @@ const CounsellorSheet = () => {
             {/* Row 3: Category + Gender side by side */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="bg-white border border-stone-200/80 shadow-sm rounded-2xl p-5">
-                <label className="text-xs font-semibold text-stone-700 font-semibold mb-3 block">Category</label>
+                <label className="text-xs font-semibold text-stone-700 font-semibold mb-3 block">Category <span className="text-stone-400 font-normal">(select one or more)</span></label>
                 <div className="flex flex-wrap gap-1.5">
                   {currentFilters.categories.map((c: string) => (
-                    <button key={c} onClick={() => setCategory(c)} className={`px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-all ${category === c ? "bg-white/70 text-stone-900 border-white" : "bg-stone-50 border-stone-200 text-stone-500 hover:border-white/30"}`}>{c}</button>
+                    <button key={c} onClick={() => toggleCategory(c)} className={`px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-all ${categories.includes(c) ? "bg-white/70 text-stone-900 border-white" : "bg-stone-50 border-stone-200 text-stone-500 hover:border-white/30"}`}>{c}</button>
                   ))}
                 </div>
               </div>

@@ -76,9 +76,15 @@ async def generate_counsellor_sheet(
     buffer_range = request.buffer_range or 2000
     counselling_type = (request.counselling_type or "JOSAA").upper()
     exam_type = (request.exam_type or "JEE_MAINS").upper()
-    category = request.category or "OPEN"
+    raw_category = request.category or "OPEN"
     raw_quota = request.quota or "AI"
     gender = request.gender or "Gender-Neutral"
+
+    # Normalize category to a list (supports single or multiple categories)
+    if isinstance(raw_category, str):
+        category_list = [raw_category]
+    else:
+        category_list = list(raw_category) or ["OPEN"]
 
     # Normalize quota to a list
     if isinstance(raw_quota, str):
@@ -99,7 +105,7 @@ async def generate_counsellor_sheet(
     target_lower_limit = max(0, user_rank - buffer_range)
     target_upper_limit = user_rank + buffer_range
 
-    logger.info(f"Generating counsellor sheet for Rank: {user_rank}, Quotas: {resolved_quotas}, Category: {category}")
+    logger.info(f"Generating counsellor sheet for Rank: {user_rank}, Quotas: {resolved_quotas}, Categories: {category_list}")
 
     # 1. Fetch valid college IDs from master_colleges based on exam type
     mc_filter = _build_institute_filter(exam_type)
@@ -126,7 +132,7 @@ async def generate_counsellor_sheet(
     query = {
         "college_id": {"$in": valid_college_ids},
         "branch": {"$regex": branch_regex, "$options": "i"},
-        "category": category,
+        "category": {"$in": category_list},
         "quota": {"$in": resolved_quotas},
         "gender": {"$in": ["Gender-Neutral", "NA"]} if gender == "Gender-Neutral" else {"$in": [gender, "Female-only (including Supernumerary)", "Female-only"]},
         "year": {"$in": settings.COUNSELLOR_YEARS},

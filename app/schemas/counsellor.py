@@ -19,7 +19,7 @@ class CounsellorSheetRequest(BaseModel):
         "JEE_MAINS",
         description="Exam type: JEE_ADVANCED (IITs only) or JEE_MAINS (all except IITs). CSAB only supports JEE_MAINS."
     )
-    category: Optional[str] = Field("OPEN", description="Seat Type, e.g. OPEN, OBC-NCL, SC, ST, EWS")
+    category: Optional[Union[str, List[str]]] = Field("OPEN", description="Seat Type(s), e.g. OPEN, OBC-NCL, SC, ST, EWS. Can be a single string or list of strings.")
     quota: Optional[Union[str, List[str]]] = Field("AI", description="Quota(s), e.g. AI (All India), HS (Home State), OS (Other State). Can be a single string or list of strings.")
     gender: Optional[str] = Field("Gender-Neutral", description="Gender pool, e.g. Gender-Neutral, Female-only (including Supernumerary)")
 
