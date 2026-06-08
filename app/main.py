@@ -85,9 +85,9 @@ from app.api.v1 import api_router
 app.include_router(api_router, prefix="/api/v1")
 
 
-@app.get("/")
+@app.get("/api")
 async def root():
-    """Root endpoint."""
+    """Root API info endpoint."""
     return {
         "message": f"{settings.APP_NAME} API",
         "version": settings.APP_VERSION,
