@@ -74,12 +74,13 @@ class QuotaFilteringService:
         logger.info(f"{action} historical_cutoffs into memory cache...")
         t0 = time.time()
         
-        # Fetch all docs with only the fields we need
+        # Fetch only recent 4 years — reduces memory from ~500k to ~200k docs
+        recent_years = [2022, 2023, 2024, 2025]
         projection = {
             "college_id": 1, "branch": 1, "category": 1, "quota": 1,
             "closing_rank": 1, "opening_rank": 1, "year": 1, "round": 1, "gender": 1
         }
-        cls._cutoffs_cache = list(col.find({}, projection))
+        cls._cutoffs_cache = list(col.find({"year": {"$in": recent_years}}, projection))
         
         # Batch-load master college info
         unique_ids = list(set(d.get("college_id") for d in cls._cutoffs_cache if d.get("college_id")))
