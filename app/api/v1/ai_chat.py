@@ -23,7 +23,7 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     firebase_uid: Optional[str] = None
-    question: str = Field(..., min_length=3, max_length=1000)
+    question: str = Field(..., min_length=1, max_length=2000)
     chat_history: list[ChatMessage] = Field(default_factory=list)
     counselling_type: str = Field(default="JOSAA")
     exam_type: str = Field(default="JEE Main")
