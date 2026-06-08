@@ -10,7 +10,6 @@ from typing import Optional
 
 from app.services.rag_pipeline import retrieve_context, generate_answer
 from app.db.mongo import get_mongo_db
-from app.core.auth import get_current_user
 
 logger = logging.getLogger("ai_chat")
 
@@ -44,40 +43,13 @@ async def health():
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(
-    payload: ChatRequest, 
+    payload: ChatRequest,
     db = Depends(get_mongo_db),
-    user_token: dict = Depends(get_current_user)
 ):
     """
     RAG-powered chat: embed question → retrieve from Pinecone → generate via Groq.
-    Enforces Freemium AI message limits mapped natively to the JWT user identity.
+    Public endpoint — no auth required and no freemium message limits.
     """
-    actual_uid = user_token["uid"]
-        
-    users_collection = db["users"]
-    user_record = users_collection.find_one({"firebase_uid": actual_uid})
-    if not user_record:
-        # Auto-create basic user record if missing during chat
-        user_record = {"firebase_uid": actual_uid, "is_premium": False, "ai_message_count": 0}
-        users_collection.insert_one(user_record)
-        
-    is_premium = user_record.get("is_premium", False)
-    if is_premium and user_record.get("premium_until"):
-        from datetime import datetime
-        if datetime.utcnow() > user_record["premium_until"]:
-            is_premium = False
-            users_collection.update_one(
-                {"firebase_uid": actual_uid},
-                {"$set": {"is_premium": False}}
-            )
-    ai_message_count = user_record.get("ai_message_count", 0)
-    
-    if not is_premium and ai_message_count >= 3:
-        raise HTTPException(
-            status_code=403, 
-            detail="Free limit reached. You have used all 3 free AI messages. Please upgrade to Premium."
-        )
-
     question = payload.question.strip()
     logger.info("Received question: %r", question)
 
@@ -99,13 +71,6 @@ async def chat(
             raise HTTPException(status_code=401, detail="Groq API key is invalid. Update GROK_API_KEY in .env.") from exc
 
         raise HTTPException(status_code=500, detail=f"Failed to generate answer: {exc_str[:200]}") from exc
-
-    # ── Increment Count on Success ──
-    if not is_premium:
-        users_collection.update_one(
-            {"firebase_uid": actual_uid},
-            {"$inc": {"ai_message_count": 1}}
-        )
 
     latency_ms = (time.perf_counter() - t0) * 1000
 
