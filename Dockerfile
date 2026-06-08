@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1.6
+# cache-bust: 2026-06-08-v2
 # ─── Stage 1: Build Frontend ───────────────────────────────────────────────────
 FROM node:20-alpine AS frontend-builder
 WORKDIR /app/frontend
