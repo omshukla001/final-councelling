@@ -87,7 +87,11 @@ class QuotaFilteringService:
         if cls._index_ensured:
             return
         try:
-            col.create_index(
+            # Override write concern to w=1: the deployment's MONGO_URI may carry a
+            # malformed default (e.g. a stray newline in "w=majority") that the replica
+            # set rejects. The index doesn't need majority durability.
+            from pymongo import WriteConcern
+            col.with_options(write_concern=WriteConcern(w=1)).create_index(
                 [("category", 1), ("quota", 1), ("year", 1), ("closing_rank", 1)],
                 name="cutoff_query_idx",
                 background=True,
