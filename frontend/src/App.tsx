@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { CompareProvider } from "@/contexts/CompareContext";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { UserPreferencesProvider } from "@/contexts/UserPreferencesContext";
 import Navbar from "@/components/Navbar";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -42,6 +44,8 @@ const App = () => (
         <ErrorBoundary>
           <BrowserRouter>
             <SessionManager />
+            <AuthProvider>
+            <SubscriptionProvider>
             <UserPreferencesProvider>
               <CompareProvider>
                 <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -66,6 +70,8 @@ const App = () => (
                 <ChatWidget />
               </CompareProvider>
             </UserPreferencesProvider>
+            </SubscriptionProvider>
+            </AuthProvider>
           </BrowserRouter>
         </ErrorBoundary>
       </TooltipProvider>
