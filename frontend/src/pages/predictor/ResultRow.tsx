@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { LineChart, Line, ResponsiveContainer, YAxis, XAxis, Tooltip } from "recharts";
 import { BarChart3, GitCompareArrows } from "lucide-react";
 import { getCollegeType, CollegeResult } from "./constants";
@@ -27,6 +28,8 @@ const ResultRow: React.FC<ResultRowProps> = ({
 
   const trendData = (college.historical_cutoffs || []).sort((a, b) => (a.year || 0) - (b.year || 0));
 
+  const hasDetail = !!college.id && college.id !== "0";
+
   return (
     <div className="hover:bg-stone-50/50 transition-colors">
       <div className="grid grid-cols-1 md:grid-cols-[40px_1fr_1fr_80px_80px_60px_60px] gap-4 items-center px-6 py-4">
@@ -42,7 +45,16 @@ const ResultRow: React.FC<ResultRowProps> = ({
               <img src={college.imageUrl} alt="" className="w-5 h-5 rounded object-contain shrink-0 hidden md:block mix-blend-multiply" />
             )}
             <span className={`hidden md:inline-block px-1.5 py-0.5 border text-[10px] font-bold rounded shrink-0 ${tColor}`}>{type}</span>
-            <h4 className="text-sm font-semibold text-stone-900 leading-snug">{college.name}</h4>
+            {hasDetail ? (
+              <Link
+                to={`/college/${college.id}`}
+                className="text-sm font-semibold text-stone-900 leading-snug hover:text-orange-600 hover:underline transition-colors"
+              >
+                {college.name}
+              </Link>
+            ) : (
+              <h4 className="text-sm font-semibold text-stone-900 leading-snug">{college.name}</h4>
+            )}
           </div>
         </div>
         <div className="text-xs text-stone-500 line-clamp-2 leading-snug">{college.branch}</div>
