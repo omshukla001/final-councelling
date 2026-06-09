@@ -28,12 +28,15 @@ export const FadeIn = ({
   children,
   delay = 0,
   className = "",
+  id,
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  id?: string;
 }) => (
   <motion.div
+    id={id}
     initial={{ opacity: 0, y: 24 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-50px" }}

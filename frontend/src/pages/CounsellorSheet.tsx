@@ -67,6 +67,27 @@ const CounsellorSheet = () => {
                 Counsellor <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-300">Sheet</span>
               </h1>
             </div>
+
+            {/* Free limited-time promo */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mt-2 inline-flex flex-col sm:flex-row items-center gap-3 px-5 py-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 shadow-lg"
+            >
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-amber-200">
+                <Sparkles className="w-3.5 h-3.5" /> Limited Time · 100% Free
+              </span>
+              <p className="text-sm md:text-base font-bold text-white text-center sm:text-left">
+                Get your personalised counselling college sheet by rank
+              </p>
+              <button
+                onClick={() => document.getElementById("counsellor-config")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-stone-900 text-xs font-extrabold shadow-md hover:opacity-90 transition-all whitespace-nowrap"
+              >
+                Get It Now <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </motion.div>
           </FadeIn>
         </div>
       </div>
@@ -77,7 +98,7 @@ const CounsellorSheet = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           
           {/* LEFT PANEL — Configuration */}
-          <FadeIn delay={0.1} className="w-full lg:w-[480px] shrink-0 space-y-5">
+          <FadeIn delay={0.1} id="counsellor-config" className="w-full lg:w-[480px] shrink-0 space-y-5">
 
             {/* Row 1: Exam + Rank side by side */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

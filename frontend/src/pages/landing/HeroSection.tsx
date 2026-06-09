@@ -298,6 +298,42 @@ export const HeroSection = () => {
               </div>
             </FadeIn>
 
+            {/* Free limited-time counsellor-sheet promo */}
+            <FadeIn delay={0.23}>
+              <Link to="/counsellor-sheet" className="group block mb-8">
+                <motion.div
+                  whileHover={{ y: -2 }}
+                  className="flex flex-col sm:flex-row items-center gap-3 rounded-[16px] px-4 py-3 max-w-xl mx-auto lg:mx-0"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,107,53,0.10), rgba(236,64,122,0.08))",
+                    border: "1px solid rgba(255,107,53,0.25)",
+                    boxShadow: "0 6px 20px rgba(255,107,53,0.10)",
+                  }}
+                >
+                  <span
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide shrink-0"
+                    style={{ background: "linear-gradient(135deg, #FF6B35, #F7931E)", color: "#FFFFFF" }}
+                  >
+                    <Sparkles className="w-3 h-3" /> Limited Time · Free
+                  </span>
+                  <p className="text-[13px] sm:text-[14px] font-bold text-center sm:text-left flex-1" style={{ color: "#1A1A1A" }}>
+                    Get your counselling college sheet by rank
+                  </p>
+                  <span
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[12px] text-[13px] font-extrabold whitespace-nowrap transition-all group-hover:scale-[1.03] shrink-0"
+                    style={{
+                      background: "linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)",
+                      color: "#FFFFFF",
+                      boxShadow: "0 6px 18px rgba(255,107,53,0.30)",
+                    }}
+                  >
+                    Get Counsellor Sheet
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </motion.div>
+              </Link>
+            </FadeIn>
+
             {/* Stats cards */}
             <FadeIn delay={0.26}>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-md sm:max-w-none mx-auto lg:mx-0">
@@ -766,12 +802,12 @@ export const HeroSection = () => {
           </div>
         </div>
 
-        {/* Scroll cue */}
+        {/* Scroll cue — in normal flow below the grid so it never overlaps the stat cards */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.6 }}
-          className="hidden lg:flex absolute bottom-14 left-1/2 -translate-x-1/2 flex-col items-center gap-2 z-20"
+          className="hidden lg:flex flex-col items-center gap-2 mt-12"
         >
           <span className="text-[10px] uppercase tracking-[0.3em] font-semibold" style={{ color: "#6B6B6B" }}>Scroll</span>
           <div className="w-6 h-10 rounded-full flex justify-center pt-2" style={{ border: "1px solid rgba(0,0,0,0.12)", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(6px)" }}>
@@ -783,6 +819,7 @@ export const HeroSection = () => {
             />
           </div>
         </motion.div>
+
       </div>
     </section>
   );
